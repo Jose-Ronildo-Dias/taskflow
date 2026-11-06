@@ -1,0 +1,14 @@
+#!/bin/sh
+# Carregado (source) pelo entrypoint da imagem do Nginx antes da geração da configuração.
+# Deriva do BACKEND_URL o host usado no cabeçalho Host e no SNI, e escolhe o resolvedor DNS do container.
+
+BACKEND_HOST="$(printf '%s' "$BACKEND_URL" | sed -E 's#^[a-zA-Z]+://([^/]+).*#\1#')"
+BACKEND_SNI="${BACKEND_HOST%%:*}"
+
+NGINX_RESOLVER="$(awk '/^nameserver/ { print $2; exit }' /etc/resolv.conf 2>/dev/null)"
+: "${NGINX_RESOLVER:=127.0.0.11}"
+case "$NGINX_RESOLVER" in
+  *:*) NGINX_RESOLVER="[$NGINX_RESOLVER]" ;;
+esac
+
+export BACKEND_HOST BACKEND_SNI NGINX_RESOLVER

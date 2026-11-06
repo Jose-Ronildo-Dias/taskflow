@@ -1,0 +1,129 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f2f6f7;
+  --surface: #ffffff;
+  --surface-2: #e8eef0;
+  --ink: #13262e;
+  --muted: #52656d;
+  --line: #d3dde1;
+  --primary: #0d6b7c;
+  --primary-ink: #ffffff;
+  --primary-soft: #d9ecf0;
+  --accent: #e8a33d;
+  --accent-soft: #fbeccf;
+  --danger: #b83a27;
+  --danger-soft: #f8dfda;
+  --success: #2b7a4b;
+  --success-soft: #d9efe2;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0d1a20;
+  --surface: #14262e;
+  --surface-2: #1b323c;
+  --ink: #e6eef1;
+  --muted: #9fb2ba;
+  --line: #28434e;
+  --primary: #4fb8ca;
+  --primary-ink: #08242b;
+  --primary-soft: #17404a;
+  --accent: #f0b65a;
+  --accent-soft: #46361a;
+  --danger: #f08a76;
+  --danger-soft: #4a2820;
+  --success: #6fc691;
+  --success-soft: #1d4030;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@keyframes tf-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.tf-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: tf-draw 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.2s both;
+}
+
+@keyframes tf-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.tf-skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--line) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: tf-shimmer 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-draw,
+  .tf-skeleton {
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

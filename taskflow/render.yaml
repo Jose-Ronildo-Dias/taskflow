@@ -1,0 +1,72 @@
+# Blueprint do TaskFlow para o Render. Guia completo em docs/DEPLOY.md.
+#
+# Planos: este arquivo usa planos pagos porque o plano "free" tem limitações incompatíveis com produção
+# (serviços hibernam após 15 min sem tráfego; o PostgreSQL gratuito expira 30 dias após a criação;
+# portas SMTP de saída 25/465/587 são bloqueadas). Para um teste descartável, troque os três "plan"
+# por "free". Consulte os preços atuais em https://render.com/pricing antes de aplicar.
+#
+# Todos os recursos ficam na mesma região (não pode ser alterada depois de criada).
+
+databases:
+  - name: taskflow-db
+    databaseName: taskflow
+    user: taskflow
+    plan: 0.1c-256mb
+    region: virginia
+    ipAllowList: []
+
+services:
+  - type: web
+    name: taskflow-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: 0.5c-512mb
+    region: virginia
+    healthCheckPath: /actuator/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: taskflow-db
+          property: connectionString
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: SWAGGER_ENABLED
+        value: "false"
+      - key: MAIL_LOG_LINKS
+        value: "false"
+      # URL pública do frontend (ex.: https://taskflow-web.onrender.com), sem barra final.
+      - key: APP_PUBLIC_URL
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      # E-mail de recuperação de senha. Deixe MAIL_ENABLED=false até ter um provedor SMTP.
+      - key: MAIL_ENABLED
+        value: "false"
+      - key: MAIL_FROM
+        sync: false
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+
+  - type: web
+    name: taskflow-web
+    runtime: docker
+    rootDir: frontend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: 0.5c-512mb
+    region: virginia
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    envVars:
+      # URL pública do backend (ex.: https://taskflow-api.onrender.com), sem barra final.
+      - key: BACKEND_URL
+        sync: false

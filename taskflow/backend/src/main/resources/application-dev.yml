@@ -1,0 +1,16 @@
+# Perfil de desenvolvimento local (SPRING_PROFILES_ACTIVE=dev). Não use em produção.
+app:
+  security:
+    bcrypt-strength: 10
+  mail:
+    log-links: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    br.com.jrdtech.taskflow: DEBUG
